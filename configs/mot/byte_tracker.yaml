@@ -3,5 +3,5 @@ defaults:
   - _self_
 
 tracker:
-  _target_: boxmot.BYTETracker
+  _target_: boxmot.ByteTrack
 name: byte_tracker-${.detection.cfg.name}  # mot task depends on detection task

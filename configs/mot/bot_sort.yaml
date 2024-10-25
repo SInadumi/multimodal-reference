@@ -3,9 +3,9 @@ defaults:
   - _self_
 
 tracker:
-  _target_: boxmot.BoTSORT
-  model_weights: null
-  fp16: false
+  _target_: boxmot.BotSort
+  reid_weights: null
+  half: false
   device: cpu
   with_reid: false
 name: bot_sort-${.detection.cfg.name}  # mot task depends on detection task

@@ -3,12 +3,12 @@ defaults:
   - _self_
 
 tracker:
-  _target_: boxmot.StrongSORT
-  model_weights:
+  _target_: boxmot.StrongSort
+  reid_weights:
     _target_: pathlib.Path
     _args_: [./model/osnet_ain_x1_0_msmt17.pt]  # choose from https://kaiyangzhou.github.io/deep-person-reid/MODEL_ZOO
   device: cpu
-  fp16: false
+  half: false
   max_dist: 0.3  # The matching threshold. Samples with larger distance are considered an invalid match.
   max_iou_dist: 0.9  # Gating threshold. Associations with cost larger than this value are disregarded.
   max_age: 150  #  Maximum number of missed misses before a track is deleted.

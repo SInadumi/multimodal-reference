@@ -10,7 +10,7 @@ import hydra
 import luigi
 import numpy as np
 import torch
-from boxmot import OCSORT, BoTSORT, BYTETracker, DeepOCSORT, HybridSORT, StrongSORT
+from boxmot import BotSort, ByteTrack, DeepOcSort, HybridSort, OcSort, StrongSort
 from omegaconf import DictConfig
 from typing_extensions import TypeAlias
 
@@ -18,7 +18,7 @@ from tasks.util import FileBasedResourceManagerMixin
 from utils.mot import BoundingBox, DetectionLabels, Frame, frame_from_video
 from utils.util import Rectangle
 
-Tracker: TypeAlias = Union[BoTSORT, StrongSORT, HybridSORT, DeepOCSORT, OCSORT, BYTETracker]
+Tracker: TypeAlias = Union[BotSort, StrongSort, HybridSort, DeepOcSort, OcSort, ByteTrack]
 
 
 class MultipleObjectTracking(luigi.Task, FileBasedResourceManagerMixin[int]):

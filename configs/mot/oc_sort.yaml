@@ -3,5 +3,5 @@ defaults:
   - _self_
 
 tracker:
-  _target_: boxmot.OCSORT
+  _target_: boxmot.OcSort
 name: oc_sort-${.detection.cfg.name}  # mot task depends on detection task
