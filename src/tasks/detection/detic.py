@@ -41,7 +41,7 @@ class DeticObjectDetection(luigi.Task, FileBasedResourceManagerMixin[int]):
             subprocess.run(
                 [
                     cfg.python,
-                    f"{cfg.project_root}/export.py",
+                    f"{cfg.project_root}/tools/run_detic_video.py",
                     f"--config-file={cfg.config}",
                     f"--video-input={input_video_file.resolve()}",
                     "--vocabulary=lvis",
