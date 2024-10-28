@@ -68,7 +68,7 @@ class CohesionAnalysis(luigi.Task, FileBasedResourceManagerMixin[int]):
                         cfg.python,
                         f"{cfg.project_root}/src/predict.py",
                         f"checkpoint={cfg.checkpoint}",
-                        f"input_path={doc_path}",
+                        f"input_knp={doc_path}",
                         f"export_dir={out_dir}",
                         "num_workers=0",
                         "devices=1",
