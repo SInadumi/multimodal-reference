@@ -23,7 +23,8 @@ repos:
           - rhoknp==1.7.0
           - cohesion-tools==0.7.3
           - polars==0.19.19
+          - luigi==3.5.0
           - dataclasses-json
           - omegaconf
-          - luigi
           - types-tabulate
+          - typing-extensions
