@@ -97,6 +97,7 @@ class MultimodalReference(luigi.Task):
             image_annotations=gold_annotation.images,
             coref_relax_mode=self.cfg.coref_relax_mode,
             mot_relax_mode=self.cfg.mot_relax_mode,
+            rel_types=self.cfg.rel_types,
             confidence_modification_method=self.cfg.confidence_modification_method,
             dataset_info=DatasetInfo.from_json(self.dataset_dir.joinpath("info.json").read_text()),
         )
@@ -112,6 +113,7 @@ def run_prediction(
     image_annotations: list[ImageAnnotation],
     coref_relax_mode: Optional[str],
     mot_relax_mode: Optional[str],
+    rel_types: list[str],
     confidence_modification_method: Literal["max", "min", "mean"],
     dataset_info: DatasetInfo,
 ) -> PhraseGroundingPrediction:
@@ -127,7 +129,7 @@ def run_prediction(
         relax_prediction_with_mot(
             phrase_grounding_prediction,
             mot_prediction,
-            rel_types=["="],
+            rel_types=rel_types,
             confidence_modification_method=confidence_modification_method,
             dataset_info=dataset_info,
         )
@@ -135,7 +137,7 @@ def run_prediction(
         relax_prediction_with_mot(
             phrase_grounding_prediction,
             image_annotations,
-            rel_types=["="],
+            rel_types=rel_types,
             confidence_modification_method=confidence_modification_method,
             dataset_info=dataset_info,
         )
@@ -154,7 +156,7 @@ def run_prediction(
                 relax_prediction_with_mot(
                     phrase_grounding_prediction,
                     mot_prediction,
-                    rel_types=["="],
+                    rel_types=rel_types,
                     confidence_modification_method=confidence_modification_method,
                     dataset_info=dataset_info,
                 )
@@ -162,7 +164,7 @@ def run_prediction(
                 relax_prediction_with_mot(
                     phrase_grounding_prediction,
                     image_annotations,
-                    rel_types=["="],
+                    rel_types=rel_types,
                     confidence_modification_method=confidence_modification_method,
                     dataset_info=dataset_info,
                 )

@@ -22,6 +22,7 @@ phrase_grounding_model: glip  # mdetr, glip, detic
 coref_relax_mode: null  # null, pred, gold
 mot_relax_mode: null  # null, pred, gold
 confidence_modification_method: max  # max, mean, min
+rel_types: ["="]
 
 names:
   mdetr: mdetr_${mdetr.name}
