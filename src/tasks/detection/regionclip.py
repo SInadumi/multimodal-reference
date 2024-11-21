@@ -58,6 +58,8 @@ class RegionCLIPObjectDetection(luigi.Task, FileBasedResourceManagerMixin[int]):
                     "configs/LVISv1-InstanceSegmentation/mask_rcnn_R_50_FPN_1x.yaml",
                     "MODEL.CLIP.BB_RPN_WEIGHTS",
                     "pretrained_ckpt/rpn/rpn_lvis_866.pth",
+                    "TEST.DETECTIONS_PER_IMAGE",
+                    "256",
                     "SEED",
                     "10",
                 ],
