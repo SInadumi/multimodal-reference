@@ -5,6 +5,7 @@ defaults:
   - mdetr: example.yaml
   - glip: example.yaml
   - detic: default.yaml
+  - mmrr: default.yaml
   - mot: example.yaml
   - _self_
 
@@ -28,6 +29,7 @@ names:
   mdetr: mdetr_${mdetr.name}
   glip: glip_${glip.name}
   detic: detic_${detic.name}
+  mmrr: mmrr_${mmrr.name}
 
 coref_relax_names:
   pred: -coref_relax_pred

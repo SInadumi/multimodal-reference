@@ -16,6 +16,7 @@ from tasks import (
     DeticPhraseGrounding,
     GLIPPhraseGrounding,
     MDETRPhraseGrounding,
+    MultiModalReferenceRelationGrounding,
     MultipleObjectTracking,
 )
 from utils.annotation import BoundingBox as BoundingBoxAnnotation
@@ -29,6 +30,7 @@ PHRASE_GROUNDING_MODEL_MAP: dict[str, type[luigi.Task]] = {
     "glip": GLIPPhraseGrounding,
     "mdetr": MDETRPhraseGrounding,
     "detic": DeticPhraseGrounding,
+    "mmrr": MultiModalReferenceRelationGrounding,
 }
 
 

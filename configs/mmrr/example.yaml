@@ -1,0 +1,10 @@
+python: /path/to/python
+project_root: /path/to/project
+name: example
+exp_name: example
+checkpoint: /path/to/checkpoint
+object_file_root: /path/to/dir
+object_file_name: ""
+gold_annotation_dir: ${gold_annotation_dir}
+prediction_dir: ${result_dir}/mmrr/${.name}
+num_utterances_in_window: 1
