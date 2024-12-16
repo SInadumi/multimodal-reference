@@ -65,7 +65,7 @@ class MultiModalReferenceRelationGrounding(luigi.Task, FileBasedResourceManagerM
 
 def split_utterances_to_sentences(
     info: DatasetInfo, annotation: ImageTextAnnotation, document: Document
-) -> ImageTextAnnotation:
+) -> list[SentenceAnnotation]:
     # collect sids corresponding to utterances
     sid_mapper = [utt.sids for utt in info.utterances]
     assert len(sid_mapper) == len(annotation.utterances)
@@ -90,11 +90,7 @@ def split_utterances_to_sentences(
             start_idx = vis_p.index(doc_p[0])
             end_idx = start_idx + len(doc_p)
             vis_sentence.phrases = vis_sentence.phrases[start_idx:end_idx]
-    return ImageTextAnnotation(
-        scenario_id=annotation.scenario_id,
-        images=annotation.images,
-        utterances=vis_sentences,
-    )
+    return vis_sentences
 
 
 def run_mmrr(cfg: DictConfig, dataset_dir: Path, document_path: Path, env: dict[str, str]) -> PhraseGroundingPrediction:
@@ -103,13 +99,13 @@ def run_mmrr(cfg: DictConfig, dataset_dir: Path, document_path: Path, env: dict[
     gold_annotation = ImageTextAnnotation.from_json(
         Path(cfg.gold_annotation_dir).joinpath(f"{dataset_info.scenario_id}.json").read_text()
     )
-    gold_annotation = split_utterances_to_sentences(
+    vis_sentences = split_utterances_to_sentences(
         info=dataset_info,
         annotation=gold_annotation,
         document=document,
     )
     sid2vis_sentence: dict[str, SentenceAnnotation] = {}
-    for sentence in gold_annotation.utterances:
+    for sentence in vis_sentences:
         assert isinstance(sentence, SentenceAnnotation)
         sid2vis_sentence.update({sentence.sid: sentence})
     sid2doc_sentence: dict[str, Sentence] = {sentence.sid: sentence for sentence in document.sentences}
@@ -149,10 +145,14 @@ def run_mmrr(cfg: DictConfig, dataset_dir: Path, document_path: Path, env: dict[
 
         with tempfile.TemporaryDirectory() as root_dir:
             for image_idx in range(start_index, end_index):
+                utterances = [
+                    UtteranceAnnotation(text=sid2vis_sentence[sid].text, phrases=sid2vis_sentence[sid].phrases)
+                    for sid in sentence_ids
+                ]
                 frame_annotation = ImageTextAnnotation(
                     scenario_id=dataset_info.scenario_id,
                     images=[gold_annotation.images[image_idx]],
-                    utterances=[sid2vis_sentence[sid] for sid in sentence_ids],
+                    utterances=utterances,
                 )
                 target = Path(root_dir) / f"{dataset_info.scenario_id}-{image_idx}.json"
                 target.write_text(frame_annotation.to_json(ensure_ascii=False, indent=2))

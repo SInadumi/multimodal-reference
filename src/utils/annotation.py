@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Union
 
 from utils.util import CamelCaseDataClassJsonMixin, Rectangle
 
@@ -47,4 +46,4 @@ class UtteranceAnnotation(CamelCaseDataClassJsonMixin):
 class ImageTextAnnotation(CamelCaseDataClassJsonMixin):
     scenario_id: str
     images: list[ImageAnnotation]
-    utterances: Union[list[UtteranceAnnotation], list[SentenceAnnotation]]
+    utterances: list[UtteranceAnnotation]
