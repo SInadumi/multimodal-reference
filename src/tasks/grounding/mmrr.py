@@ -13,7 +13,7 @@ from omegaconf import DictConfig
 from rhoknp import Document, Sentence
 
 from tasks.util import FileBasedResourceManagerMixin
-from utils.annotation import ImageTextAnnotation, SentenceAnnotation, UtteranceAnnotation
+from utils.annotation import ImageSentenceAnnotation, ImageTextAnnotation, SentenceAnnotation, UtteranceAnnotation
 from utils.mmrr import MMRefRelPrediction
 from utils.prediction import BoundingBox as BoundingBoxPrediction
 from utils.prediction import (
@@ -145,14 +145,10 @@ def run_mmrr(cfg: DictConfig, dataset_dir: Path, document_path: Path, env: dict[
 
         with tempfile.TemporaryDirectory() as root_dir:
             for image_idx in range(start_index, end_index):
-                utterances = [
-                    UtteranceAnnotation(text=sid2vis_sentence[sid].text, phrases=sid2vis_sentence[sid].phrases)
-                    for sid in sentence_ids
-                ]
-                frame_annotation = ImageTextAnnotation(
+                frame_annotation = ImageSentenceAnnotation(
                     scenario_id=dataset_info.scenario_id,
                     images=[gold_annotation.images[image_idx]],
-                    utterances=utterances,
+                    utterances=[sid2vis_sentence[sid] for sid in sentence_ids],
                 )
                 target = Path(root_dir) / f"{dataset_info.scenario_id}-{image_idx}.json"
                 target.write_text(frame_annotation.to_json(ensure_ascii=False, indent=2))

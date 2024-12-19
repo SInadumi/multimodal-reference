@@ -47,3 +47,10 @@ class ImageTextAnnotation(CamelCaseDataClassJsonMixin):
     scenario_id: str
     images: list[ImageAnnotation]
     utterances: list[UtteranceAnnotation]
+
+
+@dataclass(frozen=True)
+class ImageSentenceAnnotation(CamelCaseDataClassJsonMixin):
+    scenario_id: str
+    images: list[ImageAnnotation]
+    utterances: list[SentenceAnnotation]
