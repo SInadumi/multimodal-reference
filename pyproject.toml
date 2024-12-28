@@ -1,4 +1,5 @@
 [tool.poetry]
+package-mode = false
 name = "multimodal-reference"
 version = "0.1.0"
 description = ""
@@ -14,12 +15,13 @@ polars = "^0.19.19"
 cohesion-tools = "^0.7.2"
 matplotlib = "^3.8"
 boxmot = "^11.0"
-luigi = { version = "3.5.0", extras = ["toml"] }
+luigi = { version = "^3.4", extras = ["toml"] }
 tabulate = "^0.9.0"
 motmetrics = "^1.4"
 pyarrow = "^14.0"
 plotly = "^5.18"
 torchmetrics = { version = "^1.2", extras = ["detection"] }
+openai = "^1.53.0"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"
@@ -60,7 +62,4 @@ ban-relative-imports = "all"
 
 [tool.mypy]
 python_version = 3.9
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+plugins = ["luigi.mypy"]

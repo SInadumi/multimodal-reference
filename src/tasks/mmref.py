@@ -18,6 +18,7 @@ from tasks import (
     MDETRPhraseGrounding,
     MultiModalReferenceRelationGrounding,
     MultipleObjectTracking,
+    SoMPhraseGrounding,
 )
 from utils.annotation import BoundingBox as BoundingBoxAnnotation
 from utils.annotation import ImageAnnotation, ImageTextAnnotation
@@ -31,6 +32,7 @@ PHRASE_GROUNDING_MODEL_MAP: dict[str, type[luigi.Task]] = {
     "mdetr": MDETRPhraseGrounding,
     "detic": DeticPhraseGrounding,
     "mmrr": MultiModalReferenceRelationGrounding,
+    "som": SoMPhraseGrounding,
 }
 
 
