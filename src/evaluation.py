@@ -174,6 +174,7 @@ class MMRefEvaluator:
         recall_top_ks: list[int],
         confidence_threshold: float = 0.0,
         image_span: Literal["past-current", "prev-current", "current", "prev-next", "current-next"] = "current-next",
+        show_average_confidences: bool = False,
     ) -> list[dict[str, Any]]:
         recall_rects, precision_rects = self._compare_prediction_and_annotation(prediction, image_span=image_span)
 
@@ -189,6 +190,25 @@ class MMRefEvaluator:
                 result_dict[key][f"recall_pos@{recall_top_k}"] = recall_pos
             result_dict[key]["recall_total"] = 1
 
+            if show_average_confidences:
+                for recall_top_k in recall_top_ks:
+                    if recall_top_k == 0:
+                        continue
+                    recall_confidences_topk = [rect[0] for rect in rects[:recall_top_k]]
+                    recall_confidences_bottomk = [rect[0] for rect in rects[-recall_top_k:]]
+                    if len(recall_confidences_topk) > 0:
+                        result_dict[key][f"recall_avg_conf@top{recall_top_k}"] = math.fsum(
+                            recall_confidences_topk
+                        ) / len(recall_confidences_topk)
+                    else:
+                        result_dict[key][f"recall_avg_conf@top{recall_top_k}"] = 0
+                    if len(recall_confidences_bottomk) > 0:
+                        result_dict[key][f"recall_avg_conf@bottom{recall_top_k}"] = math.fsum(
+                            recall_confidences_bottomk
+                        ) / len(recall_confidences_bottomk)
+                    else:
+                        result_dict[key][f"recall_avg_conf@bottom{recall_top_k}"] = 0
+
         for key, rects in precision_rects.items():
             confidence: float = next(iter(rects))[0]
             if confidence < confidence_threshold:
@@ -203,33 +223,46 @@ class MMRefEvaluator:
 
         results: list[dict[str, Any]] = []
         for key, metrics in result_dict.items():
-            results.append(
-                {
-                    "scenario_id": self.dataset_info.scenario_id,
-                    "image_id": key[0],
-                    "utterance_id": key[1],
-                    "sid": key[2],
-                    "base_phrase_index": key[3],
-                    "rel_type": key[4],
-                    "instance_id_or_pred_idx": key[5],
-                    "class_name": key[6],
-                    "width": key[7],
-                    "height": key[8],
-                    "center_x": key[9],
-                    "center_y": key[10],
-                    "pos": key[11],
-                    "subpos": key[12],
-                    "temporal_location": key[13],
-                    "recall_total": metrics.get("recall_total", 0),
-                    "precision_pos": metrics.get("precision_pos", 0),
-                    "precision_total": metrics.get("precision_total", 0),
-                }
-                | {
-                    "recall_pos"
-                    + (f"@{recall_top_k}" if recall_top_k >= 0 else ""): metrics.get(f"recall_pos@{recall_top_k}", 0)
+            entry = {
+                "scenario_id": self.dataset_info.scenario_id,
+                "image_id": key[0],
+                "utterance_id": key[1],
+                "sid": key[2],
+                "base_phrase_index": key[3],
+                "rel_type": key[4],
+                "instance_id_or_pred_idx": key[5],
+                "class_name": key[6],
+                "width": key[7],
+                "height": key[8],
+                "center_x": key[9],
+                "center_y": key[10],
+                "pos": key[11],
+                "subpos": key[12],
+                "temporal_location": key[13],
+                "recall_total": metrics.get("recall_total", 0),
+                "precision_pos": metrics.get("precision_pos", 0),
+                "precision_total": metrics.get("precision_total", 0),
+            } | {
+                "recall_pos"
+                + (f"@{recall_top_k}" if recall_top_k >= 0 else ""): metrics.get(f"recall_pos@{recall_top_k}", 0)
+                for recall_top_k in recall_top_ks
+            }
+            if show_average_confidences:
+                entry |= {
+                    "recall_avg_conf"
+                    + (f"@top{recall_top_k}" if recall_top_k >= 0 else ""): metrics.get(
+                        f"recall_avg_conf@top{recall_top_k}", 0
+                    )
                     for recall_top_k in recall_top_ks
                 }
-            )
+                entry |= {
+                    "recall_avg_conf"
+                    + (f"@bottom{recall_top_k}" if recall_top_k >= 0 else ""): metrics.get(
+                        f"recall_avg_conf@bottom{recall_top_k}", 0
+                    )
+                    for recall_top_k in recall_top_ks
+                }
+            results.append(entry)
         return results
 
     def _compare_prediction_and_annotation(
@@ -450,6 +483,11 @@ def parse_args() -> argparse.Namespace:
         choices=["past-current", "prev-current", "current", "prev-next", "current-next"],
         help="Image span to evaluate.",
     )
+    parser.add_argument(
+        "--show-average-confidences",
+        action="store_true",
+        help="A flag to show average confidence scores for top-k and bottom-k predictions",
+    )
     return parser.parse_args()
 
 
@@ -485,6 +523,7 @@ def main() -> None:
                 recall_top_ks=args.recall_topk,
                 confidence_threshold=args.confidence_threshold,
                 image_span=args.image_span,
+                show_average_confidences=args.show_average_confidences,
             )
 
     if "text" in args.eval_modes:
