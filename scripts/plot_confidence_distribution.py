@@ -83,7 +83,7 @@ def visualize(comparison_table: pl.DataFrame, output_file: Path, rel_type: str) 
             x=df_confidence["confidence"],
             y=df_confidence["rank"],
             box_visible=False,
-            meanline_visible=True,
+            meanline_visible=False,
             points=False,
             side="negative",
             width=1.75,
@@ -94,6 +94,18 @@ def visualize(comparison_table: pl.DataFrame, output_file: Path, rel_type: str) 
         )
     )
 
+    # Plot median
+    df_confidence_median = df_confidence.group_by("rank").agg(pl.median("confidence"))
+    fig.add_trace(
+        go.Scatter(
+            x=df_confidence_median["confidence"],
+            y=df_confidence_median["rank"],
+            mode="markers",
+            marker=dict(color="red", symbol="star"),
+            name="Median",
+        )
+    )
+
     fig.update_layout(
         barmode="overlay",
         legend=dict(
@@ -101,6 +113,7 @@ def visualize(comparison_table: pl.DataFrame, output_file: Path, rel_type: str) 
             xanchor="left",
             y=0.99,
             x=0.01,
+            orientation="h",
         ),
         xaxis=dict(
             title=f"Confidence Score for {REF_TABLE[rel_type]}",
